@@ -3,15 +3,29 @@ import numpy as np
 import torch
 from sklearn.preprocessing import MinMaxScaler
 
+FEATURE_COLUMNS = [
+    "Prev Close",
+    "Open",
+    "High",
+    "Low",
+    "Last",
+    "Close",
+    "VWAP",
+    "Volume",
+    "Turnover",
+    "Deliverable Volume",
+    "%Deliverble",
+]
+
 def load_and_preprocess(csv_path):
     df = pd.read_csv(csv_path)
     df['Date'] = pd.to_datetime(df['Date'])
     df = df.sort_values('Date').reset_index(drop=True)
-    df = df.dropna()
+    df = df.dropna(subset=FEATURE_COLUMNS)
     return df
 
 def get_features(df):
-    return df.select_dtypes(include=[np.number]).columns.tolist()
+    return FEATURE_COLUMNS.copy()
 
 def normalize_data(df, features):
     scaler = MinMaxScaler()
