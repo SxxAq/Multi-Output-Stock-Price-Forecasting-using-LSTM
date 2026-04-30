@@ -21,19 +21,27 @@ def normalize_data(df, features):
 
 def create_sequences(data, input_steps=10, output_steps=5):
     X, y = [], []
+    indices = []
     for i in range(len(data) - input_steps - output_steps + 1):
         X.append(data[i:i + input_steps])
         y.append(data[i + input_steps:i + input_steps + output_steps])
-    return np.array(X), np.array(y)
+        indices.append(i + input_steps)
+    return np.array(X), np.array(y), np.array(indices)
 
-def prepare_tensors(X, y, train_split=0.8):
+def prepare_tensors(X, y, indices, df_dates=None, train_split=0.8):
     split = int(len(X) * train_split)
     X_train, X_test = X[:split], X[split:]
     y_train, y_test = y[:split], y[split:]
+    
+    test_indices = indices[split:]
+    if df_dates is not None:
+        test_dates = df_dates.iloc[test_indices].values
+    else:
+        test_dates = None
     
     X_train = torch.FloatTensor(X_train)
     X_test = torch.FloatTensor(X_test)
     y_train = torch.FloatTensor(y_train)
     y_test = torch.FloatTensor(y_test)
     
-    return X_train, X_test, y_train, y_test
+    return X_train, X_test, y_train, y_test, test_dates

@@ -20,7 +20,7 @@ def evaluate(model, X_test, y_test):
     
     return y_pred_np, y_test_np, {'mse': mse, 'rmse': rmse, 'mae': mae}
 
-def plot_results(losses, y_pred_np, y_test_np, features):
+def plot_results(losses, y_pred_np, y_test_np, features, dates=None):
     fig, axes = plt.subplots(2, 2, figsize=(14, 10))
     
     ax = axes[0, 0]
@@ -31,9 +31,16 @@ def plot_results(losses, y_pred_np, y_test_np, features):
     ax.grid(True, alpha=0.3)
     
     ax = axes[0, 1]
-    ax.plot(y_test_np[:, :, 0].flatten(), label='Actual', linewidth=2, alpha=0.7)
-    ax.plot(y_pred_np[:, :, 0].flatten(), label='Predicted', linewidth=2, alpha=0.7)
-    ax.set_xlabel('Time Steps')
+    if dates is not None and len(dates) == len(y_test_np):
+        ax.plot(dates, y_test_np[:, 0, 0], label='Actual', linewidth=2, alpha=0.7, marker='o', markersize=3)
+        ax.plot(dates, y_pred_np[:, 0, 0], label='Predicted', linewidth=2, alpha=0.7, marker='x', markersize=3)
+        ax.set_xlabel('Date')
+        plt.setp(ax.xaxis.get_majorticklabels(), rotation=45, ha='right')
+    else:
+        ax.plot(y_test_np[:, :, 0].flatten(), label='Actual', linewidth=2, alpha=0.7)
+        ax.plot(y_pred_np[:, :, 0].flatten(), label='Predicted', linewidth=2, alpha=0.7)
+        ax.set_xlabel('Time Steps')
+    
     ax.set_ylabel('Value')
     ax.set_title(f'Predicted vs Actual - {features[0]}')
     ax.legend()

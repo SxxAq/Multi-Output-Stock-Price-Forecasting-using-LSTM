@@ -16,10 +16,10 @@ print("Normalizing...")
 df_scaled, scaler = normalize_data(df, features)
 
 print("Creating sequences...")
-X, y = create_sequences(df_scaled[features].values)
+X, y, indices = create_sequences(df_scaled[features].values)
 
 print("Preparing tensors...")
-X_train, X_test, y_train, y_test = prepare_tensors(X, y)
+X_train, X_test, y_train, y_test, test_dates = prepare_tensors(X, y, indices, df_dates=df['Date'])
 
 print(f"X_train: {X_train.shape}, y_train: {y_train.shape}")
 print(f"X_test: {X_test.shape}, y_test: {y_test.shape}")
@@ -35,7 +35,7 @@ print(f"RMSE: {metrics['rmse']:.6f}")
 print(f"MAE: {metrics['mae']:.6f}")
 
 print("\nPlotting...")
-plot_results(losses, y_pred_np, y_test_np, features)
+plot_results(losses, y_pred_np, y_test_np, features, dates=test_dates)
 
 torch.save(model.state_dict(), "models/lstm_forecaster.pth")
 print("Model saved to models/lstm_forecaster.pth")
